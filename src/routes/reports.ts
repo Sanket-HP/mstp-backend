@@ -1,12 +1,12 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import prisma from '../db';
-import { AuthenticatedRequest, authenticateJWT, requireRoles } from '../middleware/auth';
+import { authenticateJWT, requireRoles } from '../middleware/auth';
 import { UserRole } from '@prisma/client';
 
 const router = Router();
 
 // 1. REVENUE REPORT
-router.get('/revenue', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.ADMIN]), async (req: AuthenticatedRequest, res: Response) => {
+router.get('/revenue', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.ADMIN]), async (req: Request, res: Response) => {
   try {
     // Aggregate overall metrics from database
     const bookingSum = await prisma.booking.aggregate({
@@ -82,7 +82,7 @@ router.get('/revenue', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, Us
 });
 
 // 2. PERFORMANCE REPORT
-router.get('/performance', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.ADMIN]), async (req: AuthenticatedRequest, res: Response) => {
+router.get('/performance', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.ADMIN]), async (req: Request, res: Response) => {
   try {
     const totalBuses = await prisma.bus.count();
     const activeBuses = await prisma.bus.count({ where: { status: 'ACTIVE' } });
@@ -124,7 +124,7 @@ router.get('/performance', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER
 });
 
 // 3. AUDIT LOGS (Admin only)
-router.get('/audit-logs', authenticateJWT, requireRoles([UserRole.ADMIN]), async (req: AuthenticatedRequest, res: Response) => {
+router.get('/audit-logs', authenticateJWT, requireRoles([UserRole.ADMIN]), async (req: Request, res: Response) => {
   try {
     const logs = await prisma.auditLog.findMany({
       include: {

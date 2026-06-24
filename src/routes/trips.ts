@@ -1,6 +1,6 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import prisma from '../db';
-import { AuthenticatedRequest, authenticateJWT, requireRoles } from '../middleware/auth';
+import { authenticateJWT, requireRoles } from '../middleware/auth';
 import { TripStatus, UserRole } from '@prisma/client';
 
 const router = Router();
@@ -61,7 +61,7 @@ router.get('/', async (req, res) => {
 });
 
 // 2. GET ASSIGNED DUTY (Driver or Conductor)
-router.get('/assigned', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/assigned', authenticateJWT, async (req: Request, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
 
@@ -104,7 +104,7 @@ router.get('/assigned', authenticateJWT, async (req: AuthenticatedRequest, res: 
 });
 
 // 3. START TRIP (Driver only)
-router.post('/:id/start', authenticateJWT, requireRoles([UserRole.DRIVER]), async (req: AuthenticatedRequest, res: Response) => {
+router.post('/:id/start', authenticateJWT, requireRoles([UserRole.DRIVER]), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -135,7 +135,7 @@ router.post('/:id/start', authenticateJWT, requireRoles([UserRole.DRIVER]), asyn
 });
 
 // 4. END TRIP (Driver only)
-router.post('/:id/end', authenticateJWT, requireRoles([UserRole.DRIVER]), async (req: AuthenticatedRequest, res: Response) => {
+router.post('/:id/end', authenticateJWT, requireRoles([UserRole.DRIVER]), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 

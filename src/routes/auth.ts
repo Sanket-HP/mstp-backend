@@ -1,9 +1,9 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import prisma from '../db';
 import { UserRole, DriverStatus, ConductorStatus } from '@prisma/client';
-import { AuthenticatedRequest, authenticateJWT } from '../middleware/auth';
+import { authenticateJWT } from '../middleware/auth';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'mstp_super_secret_jwt_key_2026';
@@ -163,7 +163,7 @@ router.post('/login', async (req, res) => {
 });
 
 // 3. GET PROFILE
-router.get('/profile', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/profile', authenticateJWT, async (req: Request, res: Response) => {
   try {
     if (!req.user) return res.status(401).json({ error: 'Not authenticated' });
 

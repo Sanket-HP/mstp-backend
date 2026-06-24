@@ -1,12 +1,12 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import prisma from '../db';
-import { AuthenticatedRequest, authenticateJWT, requireRoles } from '../middleware/auth';
+import { authenticateJWT, requireRoles } from '../middleware/auth';
 import { ComplaintStatus, UserRole } from '@prisma/client';
 
 const router = Router();
 
 // 1. FILE A COMPLAINT (Passenger/Conductor/Driver)
-router.post('/', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const { category, description } = req.body;
     if (!category || !description) {
@@ -29,7 +29,7 @@ router.post('/', authenticateJWT, async (req: AuthenticatedRequest, res: Respons
 });
 
 // 2. GET COMPLAINTS (Role-based: Passenger sees own; Admin/Depot Manager sees all)
-router.get('/', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/', authenticateJWT, async (req: Request, res: Response) => {
   try {
     if (req.user!.role === UserRole.ADMIN || req.user!.role === UserRole.DEPOT_MANAGER) {
       const complaints = await prisma.complaint.findMany({
@@ -53,7 +53,7 @@ router.get('/', authenticateJWT, async (req: AuthenticatedRequest, res: Response
 });
 
 // 3. RESOLVE A COMPLAINT (Admin / Depot Manager)
-router.patch('/:id/resolve', authenticateJWT, requireRoles([UserRole.ADMIN, UserRole.DEPOT_MANAGER]), async (req: AuthenticatedRequest, res: Response) => {
+router.patch('/:id/resolve', authenticateJWT, requireRoles([UserRole.ADMIN, UserRole.DEPOT_MANAGER]), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { response } = req.body;

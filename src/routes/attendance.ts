@@ -1,12 +1,12 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import prisma from '../db';
-import { AuthenticatedRequest, authenticateJWT } from '../middleware/auth';
+import { authenticateJWT } from '../middleware/auth';
 import { UserRole, DriverStatus, ConductorStatus } from '@prisma/client';
 
 const router = Router();
 
 // 1. CHECK-IN (GPS-based)
-router.post('/check-in', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/check-in', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const { latitude, longitude } = req.body;
     if (latitude === undefined || longitude === undefined) {
@@ -71,7 +71,7 @@ router.post('/check-in', authenticateJWT, async (req: AuthenticatedRequest, res:
 });
 
 // 2. CHECK-OUT (GPS-based)
-router.post('/check-out', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/check-out', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const { latitude, longitude } = req.body;
     if (latitude === undefined || longitude === undefined) {
@@ -133,7 +133,7 @@ router.post('/check-out', authenticateJWT, async (req: AuthenticatedRequest, res
 });
 
 // 3. GET ATTENDANCE HISTORY
-router.get('/report', authenticateJWT, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/report', authenticateJWT, async (req: Request, res: Response) => {
   try {
     const userId = req.user!.id;
     const history = await prisma.attendance.findMany({

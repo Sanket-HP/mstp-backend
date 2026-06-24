@@ -1,12 +1,12 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import prisma from '../db';
-import { AuthenticatedRequest, authenticateJWT, requireRoles } from '../middleware/auth';
+import { authenticateJWT, requireRoles } from '../middleware/auth';
 import { BookingStatus, TicketStatus, UserRole, PassStatus } from '@prisma/client';
 
 const router = Router();
 
 // 1. BOOK A TRIP (Passenger only)
-router.post('/', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: AuthenticatedRequest, res: Response) => {
+router.post('/', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: Request, res: Response) => {
   try {
     const { tripId, seatNumbers, totalAmount } = req.body;
     const passengerId = req.user?.passengerId;
@@ -106,7 +106,7 @@ router.post('/', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req
 });
 
 // 2. GET BOOKING HISTORY (Passenger)
-router.get('/history', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: AuthenticatedRequest, res: Response) => {
+router.get('/history', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: Request, res: Response) => {
   try {
     const passengerId = req.user?.passengerId;
     if (!passengerId) return res.status(400).json({ error: 'No passenger profile linked' });
@@ -132,7 +132,7 @@ router.get('/history', authenticateJWT, requireRoles([UserRole.PASSENGER]), asyn
 });
 
 // 3. CANCEL BOOKING / TICKET
-router.post('/tickets/:id/cancel', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: AuthenticatedRequest, res: Response) => {
+router.post('/tickets/:id/cancel', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const passengerId = req.user?.passengerId;
@@ -208,7 +208,7 @@ router.post('/tickets/:id/cancel', authenticateJWT, requireRoles([UserRole.PASSE
 });
 
 // 4. BUY BUS PASS
-router.post('/passes', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: AuthenticatedRequest, res: Response) => {
+router.post('/passes', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: Request, res: Response) => {
   try {
     const { passType, pricePaid, durationDays } = req.body;
     const passengerId = req.user?.passengerId;
@@ -260,7 +260,7 @@ router.post('/passes', authenticateJWT, requireRoles([UserRole.PASSENGER]), asyn
 });
 
 // 5. GET ACTIVE PASS
-router.get('/passes/active', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: AuthenticatedRequest, res: Response) => {
+router.get('/passes/active', authenticateJWT, requireRoles([UserRole.PASSENGER]), async (req: Request, res: Response) => {
   try {
     const passengerId = req.user?.passengerId;
     if (!passengerId) return res.status(400).json({ error: 'No passenger profile linked' });

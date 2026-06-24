@@ -1,12 +1,12 @@
-import { Router, Response } from 'express';
+import { Router, Request, Response } from 'express';
 import prisma from '../db';
-import { AuthenticatedRequest, authenticateJWT, requireRoles } from '../middleware/auth';
+import { authenticateJWT, requireRoles } from '../middleware/auth';
 import { EmergencyStatus, UserRole } from '@prisma/client';
 
 const router = Router();
 
 // 1. REPORT EMERGENCY (Driver / Conductor only)
-router.post('/', authenticateJWT, requireRoles([UserRole.DRIVER, UserRole.CONDUCTOR]), async (req: AuthenticatedRequest, res: Response) => {
+router.post('/', authenticateJWT, requireRoles([UserRole.DRIVER, UserRole.CONDUCTOR]), async (req: Request, res: Response) => {
   try {
     const { tripId, type, description, latitude, longitude } = req.body;
 
@@ -58,7 +58,7 @@ router.post('/', authenticateJWT, requireRoles([UserRole.DRIVER, UserRole.CONDUC
 });
 
 // 2. GET ACTIVE EMERGENCIES (Depot Manager / Admin)
-router.get('/', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.ADMIN]), async (req: AuthenticatedRequest, res: Response) => {
+router.get('/', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.ADMIN]), async (req: Request, res: Response) => {
   try {
     const reports = await prisma.emergencyReport.findMany({
       include: {
@@ -81,7 +81,7 @@ router.get('/', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.
 });
 
 // 3. RESOLVE EMERGENCY (Depot Manager / Admin)
-router.patch('/:id/resolve', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.ADMIN]), async (req: AuthenticatedRequest, res: Response) => {
+router.patch('/:id/resolve', authenticateJWT, requireRoles([UserRole.DEPOT_MANAGER, UserRole.ADMIN]), async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 

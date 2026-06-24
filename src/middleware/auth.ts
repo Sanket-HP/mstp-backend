@@ -5,23 +5,10 @@ import { UserRole } from "@prisma/client";
 const JWT_SECRET =
 process.env.JWT_SECRET || "mstp_super_secret_jwt_key_2026";
 
-export interface AuthenticatedRequest extends Request<any, any, any, any> {
-user?: {
-id: string;
-username: string;
-role: UserRole;
-name: string;
-employeeId?: string;
-passengerId?: string;
-driverId?: string;
-conductorId?: string;
-};
-}
-
 export function authenticateJWT(
-req: AuthenticatedRequest,
-res: Response,
-next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) {
 const authHeader = req.headers?.authorization;
 
@@ -49,7 +36,7 @@ error: "Token is invalid or expired",
 
 export function requireRoles(allowedRoles: UserRole[]) {
 return (
-req: AuthenticatedRequest,
+req: Request,
 res: Response,
 next: NextFunction
 ) => {
