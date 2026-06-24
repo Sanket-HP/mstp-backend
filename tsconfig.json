@@ -1,16 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "commonjs",
-    "lib": ["es2022"],
-    "allowJs": true,
+    "target": "ES2020",
+    "module": "Node16",
+    "moduleResolution": "node16",
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
+
+    "strict": false,
+    "noImplicitAny": false,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }
